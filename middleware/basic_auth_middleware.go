@@ -27,13 +27,13 @@ func (b *BasicAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	username, password, ok := r.BasicAuth()
 	if !ok {
 		log.Println("認證不合法")
-		common.Response(struct{}{}, http.StatusUnauthorized, "認證不合法", w)
+		common.Response(http.StatusUnauthorized, "認證不合法", nil, w)
 		return
 	}
 
 	if username != "admin" || password != "123456" {
 		log.Println("帳號密碼不正確")
-		common.Response(struct{}{}, http.StatusUnauthorized, "帳號密碼不正確", w)
+		common.Response(http.StatusUnauthorized, "帳號密碼不正確", nil, w)
 		return
 	}
 

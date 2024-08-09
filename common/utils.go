@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -31,26 +32,44 @@ func init() {
 	})
 }
 
-type ValidateErrors map[string]map[string]string
+type ErrorMap map[string]interface{}
 
-func ValidateStruct(data interface{}) ValidateErrors {
+func ValidateStruct(data interface{}) {
 	errs := validate.Struct(data)
 	if errs != nil {
-		validateErrors := make(ValidateErrors)
-		validateErrors["validation"] = make(map[string]string)
+		errorData := make(ErrorMap)
+		errorData["validation"] = make(map[string]string)
 		for _, err := range errs.(validator.ValidationErrors) {
 			key := strings.ToLower(err.StructField())
 			errText := err.Translate(trans)
-			validateErrors["validation"][key] = errText
+			validationMap := errorData["validation"].(map[string]string)
+			validationMap[key] = errText
+			// errorData["validation"][key] = errText
 		}
 
-		return validateErrors
+		fmt.Println(errorData)
+		Abort(http.StatusUnprocessableEntity, "輸入資料驗證失敗", errorData)
 	}
-
-	return nil
 }
 
-func Response(data interface{}, statusCode int, message string, w http.ResponseWriter) {
+type HttpJsonError struct {
+	StatusCode int
+	Message    string
+	ErrorData  ErrorMap
+}
+
+func (e *HttpJsonError) Error() string {
+	return fmt.Sprintf("StatusCode:%d, Message:%s", e.StatusCode, e.Message)
+}
+
+func Abort(statusCode int, message string, errorData ErrorMap) {
+	if errorData == nil {
+		errorData = make(ErrorMap)
+	}
+	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
+}
+
+func Response(statusCode int, message string, data interface{}, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
@@ -58,8 +77,8 @@ func Response(data interface{}, statusCode int, message string, w http.ResponseW
 		"code":    statusCode,
 		"message": message,
 	}
-
-	_, is_error := data.(ValidateErrors)
+	fmt.Println(data)
+	_, is_error := data.(ErrorMap)
 	if is_error {
 		responseData["errors"] = data
 	} else {

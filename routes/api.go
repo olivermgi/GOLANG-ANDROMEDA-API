@@ -26,5 +26,5 @@ func RegisterAPIRoutes() {
 
 // 404 Response
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	common.Response(struct{}{}, http.StatusNotFound, "此 API 不存在", w)
+	common.Response(http.StatusNotFound, "此 API 不存在", nil, w)
 }

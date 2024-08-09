@@ -16,35 +16,23 @@ import (
 // 	common.Response(companies, http.StatusOK, "", w)
 // }
 
-// type User struct {
-// 	Name    string    `validate:"ne=admin" validate_field:"名稱"`
-// 	Age     int       `validate:"gte=18"  validate_field:"年齡"`
-// 	Sex     string    `validate:"oneof=male female" validate_field:"性別"`
-// 	RegTime time.Time `validate:"lte"  validate_field:"註冊時間"`
-// }
-
 // 新增影片資料
 func StoreVideo(w http.ResponseWriter, r *http.Request) {
 	var videoData services.VideoData
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&videoData)
 	if err != nil {
-		common.Response(struct{}{}, http.StatusForbidden, "JSON 格式不正確", w)
-		return
+		common.Abort(http.StatusForbidden, "JSON 格式不正確", nil)
 	}
 
-	if err := common.ValidateStruct(videoData); err != nil {
-		common.Response(err, http.StatusUnprocessableEntity, "輸入資料驗證失敗", w)
-		return
-	}
+	common.ValidateStruct(videoData)
 
 	video := services.StoreVideo(videoData)
 	if video == nil {
-		common.Response(struct{}{}, http.StatusForbidden, "影片資料新增失敗", w)
-		return
+		common.Abort(http.StatusForbidden, "影片資料新增失敗", nil)
 	}
 
-	common.Response(video, http.StatusCreated, "影片資料新增成功", w)
+	common.Response(http.StatusCreated, "影片資料新增成功", video, w)
 }
 
 // // 顯示單筆公司資料
