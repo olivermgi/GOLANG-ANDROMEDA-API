@@ -12,7 +12,7 @@ import (
 func main() {
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: &middleware.ErrorResponseMiddleware{},
+		Handler: &middleware.Middlewares{},
 	}
 
 	routes.RegisterAPIRoutes()
