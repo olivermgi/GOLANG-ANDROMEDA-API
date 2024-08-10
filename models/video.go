@@ -42,7 +42,7 @@ func (c *Video) Insert(data Video) *Video {
 // 抓取影片資料，並回傳頁面格式
 func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
 	queryStr := fmt.Sprintf(
-		"SELECT id, status, title, updated_at FROM videos ORDER BY %s %s LIMIT ? OFFSET ?",
+		"SELECT id, status, title, updated_at FROM videos ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
 		sortColume, sort,
 	)
 
@@ -69,6 +69,30 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 	DB.QueryRow("SELECT COUNT(*) FROM videos").Scan(&count)
 	lastPage = int(math.Ceil(float64(count) / float64(perPage)))
 	return videos, count, lastPage
+}
+
+func (c *Video) All() []Video {
+	queryStr := fmt.Sprintln("SELECT id, status, title, updated_at FROM videos")
+
+	rows, err := DB.Query(queryStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	videos := make([]Video, 0)
+	for rows.Next() {
+		var video Video
+		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
+		if err != nil {
+			log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
+			return make([]Video, 0)
+		}
+		videos = append(videos, video)
+	}
+
+	return videos
 }
 
 // 以 id 抓取影片單筆資料

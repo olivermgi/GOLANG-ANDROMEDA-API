@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -54,8 +55,8 @@ func ShowVideo(w http.ResponseWriter, r *http.Request) {
 		VideoId int `validate:"required,min=1" field:"video_id "`
 	}{videoId})
 
-	video := services.GetVideo(videoId)
-
+	video := services.GetVideoOrAbort(videoId)
+	fmt.Println(video)
 	common.Response(http.StatusOK, "單筆影片資料取得成功", video, w)
 }
 

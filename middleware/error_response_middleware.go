@@ -12,7 +12,7 @@ type ErrorResponseMiddleware struct {
 }
 
 // 集中管理例外的錯誤
-func (b *ErrorResponseMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *ErrorResponseMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := recover()
 		if err == nil {
@@ -32,7 +32,7 @@ func (b *ErrorResponseMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		common.Response(statusCode, message, errors, w)
 	}()
 
-	b.Next = &BasicAuthMiddleware{}
+	m.Next = &BasicAuthMiddleware{}
 
-	b.Next.ServeHTTP(w, r)
+	m.Next.ServeHTTP(w, r)
 }

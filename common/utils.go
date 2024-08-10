@@ -44,13 +44,10 @@ func DumpDie(data interface{}) {
 
 func Abort(statusCode int, message string) {
 	errorData := make(ErrorMap)
-	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
+	AbortWithData(statusCode, message, errorData)
 }
 
 func AbortWithData(statusCode int, message string, errorData ErrorMap) {
-	if errorData == nil {
-		errorData = make(ErrorMap)
-	}
 	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
 }
 
@@ -83,8 +80,16 @@ func Response(statusCode int, message string, data interface{}, w http.ResponseW
 		"message": message,
 	}
 
-	_, is_error := data.(ErrorMap)
-	if is_error {
+	isError := false
+	if !(statusCode >= 200 && statusCode < 300) {
+		isError = true
+	}
+
+	if data == nil {
+		data = struct{}{}
+	}
+
+	if isError {
 		responseData["errors"] = data
 	} else {
 		responseData["data"] = data
