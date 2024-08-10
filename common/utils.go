@@ -2,10 +2,10 @@ package common
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	locale_zh_tw "github.com/go-playground/locales/zh_Hant_TW"  // 語言環境包
@@ -28,14 +28,33 @@ func init() {
 	}
 
 	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
-		return field.Tag.Get("validate_field")
+		return field.Tag.Get("field")
 	})
 }
 
-type ErrorMap map[string]interface{}
+func StringToInt(str string) int {
+	number, _ := strconv.Atoi(str)
+	return number
+}
+
+func DumpDie(data interface{}) {
+
+	//panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
+}
+
+func Abort(statusCode int, message string, errorData ErrorMap) {
+	if errorData == nil {
+		errorData = make(ErrorMap)
+	}
+	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
+}
 
 func ValidateStruct(data interface{}) {
 	errs := validate.Struct(data)
+	validateAbort(errs)
+}
+
+func validateAbort(errs error) {
 	if errs != nil {
 		errorData := make(ErrorMap)
 		errorData["validation"] = make(map[string]string)
@@ -44,29 +63,10 @@ func ValidateStruct(data interface{}) {
 			errText := err.Translate(trans)
 			validationMap := errorData["validation"].(map[string]string)
 			validationMap[key] = errText
-			// errorData["validation"][key] = errText
 		}
 
-		fmt.Println(errorData)
 		Abort(http.StatusUnprocessableEntity, "輸入資料驗證失敗", errorData)
 	}
-}
-
-type HttpJsonError struct {
-	StatusCode int
-	Message    string
-	ErrorData  ErrorMap
-}
-
-func (e *HttpJsonError) Error() string {
-	return fmt.Sprintf("StatusCode:%d, Message:%s", e.StatusCode, e.Message)
-}
-
-func Abort(statusCode int, message string, errorData ErrorMap) {
-	if errorData == nil {
-		errorData = make(ErrorMap)
-	}
-	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
 }
 
 func Response(statusCode int, message string, data interface{}, w http.ResponseWriter) {
@@ -77,7 +77,7 @@ func Response(statusCode int, message string, data interface{}, w http.ResponseW
 		"code":    statusCode,
 		"message": message,
 	}
-	fmt.Println(data)
+
 	_, is_error := data.(ErrorMap)
 	if is_error {
 		responseData["errors"] = data

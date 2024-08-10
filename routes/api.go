@@ -12,10 +12,10 @@ func RegisterAPIRoutes() {
 	http.HandleFunc("/", notFoundHandler)
 
 	http.HandleFunc("POST /api/internal/videos", controllers.StoreVideo)
-	// http.HandleFunc("GET /api/internal/videos", controllers.IndexVideo)
-	// http.HandleFunc("GET /api/internal/videos/{video_id}", controllers.ShowCompany)
-	// http.HandleFunc("PUT /api/internal/videos/{video_id}", controllers.UpdateVideo)
-	// http.HandleFunc("DELETE /api/internal/videos/{video_id}", controllers.DestroyVideo)
+	http.HandleFunc("GET /api/internal/videos", controllers.IndexVideo)
+	http.HandleFunc("GET /api/internal/videos/{video_id}", controllers.ShowVideo)
+	http.HandleFunc("PUT /api/internal/videos/{video_id}", controllers.UpdateVideo)
+	http.HandleFunc("DELETE /api/internal/videos/{video_id}", controllers.DestroyVideo)
 
 	// http.HandleFunc("GET /api/companies", controllers.IndexCompany)
 	// http.HandleFunc("POST /api/companies", controllers.StoreCompany)
@@ -26,5 +26,5 @@ func RegisterAPIRoutes() {
 
 // 404 Response
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	common.Response(http.StatusNotFound, "此 API 不存在", nil, w)
+	common.Abort(http.StatusNotFound, "此 API 不存在", nil)
 }

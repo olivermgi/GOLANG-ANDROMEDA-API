@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"log"
+	"math"
+	"time"
 )
 
 type Video struct {
@@ -28,7 +30,6 @@ func (c *Video) Insert(data Video) *Video {
 		log.Println("取得新增的影片 ID 失敗，錯誤訊息：", err)
 		return nil
 	}
-	fmt.Println("公司新增成功")
 
 	return &Video{
 		Id:          int(id),
@@ -38,63 +39,79 @@ func (c *Video) Insert(data Video) *Video {
 	}
 }
 
-// // 抓取所有公司資料，並且以 id 欄位降冪排序
-// func (c *Company) All() []Company {
-// 	companies := make([]Company, 0)
-// 	rows, err := DB.Query("SELECT * FROM companies ORDER BY id DESC")
-// 	if err != nil {
-// 		log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
-// 		return companies
-// 	}
-// 	defer rows.Close()
+// 抓取影片資料，並回傳頁面格式
+func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
+	queryStr := fmt.Sprintf(
+		"SELECT id, status, title, updated_at FROM videos ORDER BY %s %s LIMIT ? OFFSET ?",
+		sortColume, sort,
+	)
 
-// 	for rows.Next() {
-// 		var company Company
-// 		err := rows.Scan(&company.Id, &company.Name, &company.Address)
-// 		if err != nil {
-// 			log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
-// 			return companies
-// 		}
-// 		companies = append(companies, company)
-// 	}
+	page = (page - 1) * perPage
+	rows, err := DB.Query(queryStr, perPage, page)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// 	return companies
-// }
+	defer rows.Close()
 
-// // 以 id 抓取公司單筆資料
-// func (c *Company) Get(id int) *Company {
-// 	var company Company
-// 	err := DB.QueryRow("SELECT * FROM companies WHERE id = ?", id).Scan(&company.Id, &company.Name, &company.Address)
-// 	if err != nil {
-// 		log.Println("取得單筆公司資料失敗，錯誤訊息：", err)
-// 		return nil
-// 	}
+	videos = make([]Video, 0)
+	for rows.Next() {
+		var video Video
+		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
+		if err != nil {
+			log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
+			return make([]Video, 0), 0, 0
+		}
+		videos = append(videos, video)
+	}
 
-// 	return &company
-// }
+	count := 0
+	DB.QueryRow("SELECT COUNT(*) FROM videos").Scan(&count)
+	lastPage = int(math.Ceil(float64(count) / float64(perPage)))
+	return videos, count, lastPage
+}
 
-// // 以 id 更新公司單筆資料
-// func (c *Company) Update(id int, data Company) *Company {
-// 	_, err := DB.Exec("UPDATE companies SET name = ?, address = ? WHERE id = ?", data.Name, data.Address, id)
-// 	if err != nil {
-// 		log.Println("更新公司資料失敗，錯誤訊息：", err)
-// 		return nil
-// 	}
+// 以 id 抓取影片單筆資料
+func (c *Video) Get(id int) *Video {
+	var video Video
+	err := DB.QueryRow("SELECT id, status, title, description FROM videos WHERE id = ?", id).
+		Scan(&video.Id, &video.Status, &video.Title, &video.Description)
 
-// 	return &Company{
-// 		Id:      int(id),
-// 		Name:    data.Name,
-// 		Address: data.Address,
-// 	}
-// }
+	if err != nil {
+		log.Println("取得單筆影片資料失敗，錯誤訊息：", err)
+		return nil
+	}
 
-// // 以 id 刪除公司單筆資料
-// func (c *Company) Delete(id int) bool {
-// 	_, err := DB.Exec("DELETE FROM companies WHERE id = ?", id)
-// 	if err != nil {
-// 		log.Println("更新公司資料失敗，錯誤訊息：", err)
-// 		return false
-// 	}
+	return &video
+}
 
-// 	return true
-// }
+// 以 id 更新影片單筆資料
+func (c *Video) Update(id int, data Video) *Video {
+	now := time.Now().Format(time.DateTime)
+
+	_, err := DB.Exec("UPDATE videos SET status = ?, title = ?, description = ?, updated_at = ? WHERE id = ?",
+		data.Status, data.Title, data.Description, now, id)
+
+	if err != nil {
+		log.Println("更新影片資料失敗，錯誤訊息：", err)
+		return nil
+	}
+
+	return &Video{
+		Id:          id,
+		Status:      data.Status,
+		Title:       data.Title,
+		Description: data.Description,
+	}
+}
+
+// 以 id 刪除公司單筆資料
+func (c *Video) Delete(id int) bool {
+	_, err := DB.Exec("DELETE FROM videos WHERE id = ?", id)
+	if err != nil {
+		log.Println("刪除影片資料失敗，錯誤訊息：", err)
+		return false
+	}
+
+	return true
+}

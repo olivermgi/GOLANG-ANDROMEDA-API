@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -11,12 +10,6 @@ import (
 )
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("恢復了panic:", r)
-		}
-	}()
-
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: &middleware.ErrorResponseMiddleware{},
