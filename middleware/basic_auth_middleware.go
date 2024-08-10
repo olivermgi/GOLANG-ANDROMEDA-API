@@ -25,11 +25,11 @@ func (b *BasicAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	username, password, ok := r.BasicAuth()
 	if !ok {
-		common.Abort(http.StatusUnauthorized, "認證不合法", nil)
+		common.Abort(http.StatusUnauthorized, "認證不合法")
 	}
 
 	if username != "admin" || password != "123456" {
-		common.Abort(http.StatusUnauthorized, "帳號密碼不正確", nil)
+		common.Abort(http.StatusUnauthorized, "帳號密碼不正確")
 	}
 
 	b.Next.ServeHTTP(w, r)

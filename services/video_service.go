@@ -45,7 +45,7 @@ func StoreVideo(videoData VideoData) *models.Video {
 	video := model.Insert(data)
 
 	if video == nil {
-		common.Abort(http.StatusForbidden, "影片資料新增失敗", nil)
+		common.Abort(http.StatusForbidden, "影片資料新增失敗")
 	}
 
 	return video
@@ -59,7 +59,7 @@ func GetVideoOrAbort(video_id int) *models.Video {
 	video := GetVideo(video_id)
 
 	if video == nil {
-		common.Abort(http.StatusNotFound, "無此影片資料資料", nil)
+		common.Abort(http.StatusNotFound, "無此影片資料資料")
 	}
 
 	return video
@@ -76,7 +76,7 @@ func UpdateVideo(videoId int, videoData VideoData) *models.Video {
 
 	video := model.Update(videoId, data)
 	if video == nil {
-		common.Abort(http.StatusForbidden, "影片資料更新失敗", nil)
+		common.Abort(http.StatusForbidden, "影片資料更新失敗")
 	}
 
 	return video
@@ -87,6 +87,6 @@ func DeleteVideo(videoId int) {
 
 	is_success := model.Delete(videoId)
 	if !is_success {
-		common.Abort(http.StatusForbidden, "影片資料刪除失敗", nil)
+		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
 	}
 }

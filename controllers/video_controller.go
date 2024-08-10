@@ -33,7 +33,7 @@ func StoreVideo(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&videoData)
 	if err != nil {
-		common.Abort(http.StatusForbidden, "JSON 格式不正確", nil)
+		common.Abort(http.StatusForbidden, "JSON 格式不正確")
 	}
 
 	common.ValidateStruct(videoData)
@@ -47,7 +47,7 @@ func StoreVideo(w http.ResponseWriter, r *http.Request) {
 func ShowVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤", nil)
+		common.Abort(http.StatusForbidden, "參數類型錯誤")
 	}
 
 	common.ValidateStruct(struct {
@@ -63,14 +63,14 @@ func ShowVideo(w http.ResponseWriter, r *http.Request) {
 func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤", nil)
+		common.Abort(http.StatusForbidden, "參數類型錯誤")
 	}
 
 	var videoData services.VideoData
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&videoData)
 	if err != nil {
-		common.Abort(http.StatusForbidden, "JSON 格式不正確", nil)
+		common.Abort(http.StatusForbidden, "JSON 格式不正確")
 	}
 
 	common.ValidateStruct(videoData)
@@ -84,7 +84,7 @@ func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤", nil)
+		common.Abort(http.StatusForbidden, "參數類型錯誤")
 	}
 
 	services.DeleteVideo(videoId)

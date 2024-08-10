@@ -42,7 +42,12 @@ func DumpDie(data interface{}) {
 	//panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
 }
 
-func Abort(statusCode int, message string, errorData ErrorMap) {
+func Abort(statusCode int, message string) {
+	errorData := make(ErrorMap)
+	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
+}
+
+func AbortWithData(statusCode int, message string, errorData ErrorMap) {
 	if errorData == nil {
 		errorData = make(ErrorMap)
 	}
@@ -65,7 +70,7 @@ func validateAbort(errs error) {
 			validationMap[key] = errText
 		}
 
-		Abort(http.StatusUnprocessableEntity, "輸入資料驗證失敗", errorData)
+		AbortWithData(http.StatusUnprocessableEntity, "輸入資料驗證失敗", errorData)
 	}
 }
 
