@@ -4,45 +4,33 @@ import (
 	"net/http"
 
 	"github.com/olivermgi/golang-crud-practice/common"
+	rules "github.com/olivermgi/golang-crud-practice/controllers/validator/rules/video"
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 
-type VideoData struct {
-	Status      string `validate:"required,oneof=publish unpublish" field:"狀態"`
-	Title       string `validate:"required,max=50" field:"標題"`
-	Description string `validate:"omitempty,max=255" field:"描述"`
-}
-
-type VideoListData struct {
-	Page       int    `validate:"required,min=1" field:"頁數"`
-	PerPage    int    `validate:"required,oneof=10 20 30" field:"筆數"`
-	Sort       string `validate:"required,oneof=asc desc" field:"排序方式"`
-	SortColumn string `validate:"required,oneof=id updated_at" field:"排序欄位"`
-}
-
 var model *models.Video
 
-func IndexVideo(videListData VideoListData) map[string]interface{} {
-	videos, total, last_page := model.Paginate(videListData.Page, videListData.PerPage,
-		videListData.SortColumn, videListData.Sort)
+func IndexVideo(passedData *rules.VideoIndex) map[string]interface{} {
+	videos, total, last_page := model.Paginate(passedData.Page,
+		passedData.PerPage, passedData.SortColumn, passedData.Sort)
 
 	return map[string]interface{}{
-		"page":      videListData.Page,
-		"per_page":  videListData.PerPage,
+		"page":      passedData.Page,
+		"per_page":  passedData.PerPage,
 		"total":     total,
 		"last_page": last_page,
 		"items":     videos,
 	}
 }
 
-func StoreVideo(videoData VideoData) *models.Video {
-	data := models.Video{
-		Status:      videoData.Status,
-		Title:       videoData.Title,
-		Description: videoData.Description,
+func StoreVideo(passedData *rules.VideoStore) *models.Video {
+	dbData := models.Video{
+		Status:      passedData.Status,
+		Title:       passedData.Title,
+		Description: passedData.Description,
 	}
 
-	video := model.Insert(data)
+	video := model.Insert(dbData)
 
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料新增失敗")
@@ -51,12 +39,12 @@ func StoreVideo(videoData VideoData) *models.Video {
 	return video
 }
 
-func GetVideo(video_id int) *models.Video {
-	return model.Get(video_id)
+func GetVideo(videoId int) *models.Video {
+	return model.Get(videoId)
 }
 
-func GetVideoOrAbort(video_id int) *models.Video {
-	video := GetVideo(video_id)
+func GetVideoOrAbort(videoId int) *models.Video {
+	video := GetVideo(videoId)
 
 	if video == nil {
 		common.Abort(http.StatusNotFound, "無此影片資料資料")
@@ -65,16 +53,16 @@ func GetVideoOrAbort(video_id int) *models.Video {
 	return video
 }
 
-func UpdateVideo(videoId int, videoData VideoData) *models.Video {
-	GetVideoOrAbort(videoId)
+func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
+	GetVideoOrAbort(passedData.VideoId)
 
 	data := models.Video{
-		Status:      videoData.Status,
-		Title:       videoData.Title,
-		Description: videoData.Description,
+		Status:      passedData.Status,
+		Title:       passedData.Title,
+		Description: passedData.Description,
 	}
 
-	video := model.Update(videoId, data)
+	video := model.Update(passedData.VideoId, data)
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料更新失敗")
 	}

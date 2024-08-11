@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"strings"
 
 	locale_zh_tw "github.com/go-playground/locales/zh_Hant_TW"  // 語言環境包
 	ut "github.com/go-playground/universal-translator"          // 翻譯器
@@ -49,26 +48,6 @@ func Abort(statusCode int, message string) {
 
 func AbortWithData(statusCode int, message string, errorData ErrorMap) {
 	panic(&HttpJsonError{StatusCode: statusCode, Message: message, ErrorData: errorData})
-}
-
-func ValidateStruct(data interface{}) {
-	errs := validate.Struct(data)
-	validateAbort(errs)
-}
-
-func validateAbort(errs error) {
-	if errs != nil {
-		errorData := make(ErrorMap)
-		errorData["validation"] = make(map[string]string)
-		for _, err := range errs.(validator.ValidationErrors) {
-			key := strings.ToLower(err.StructField())
-			errText := err.Translate(trans)
-			validationMap := errorData["validation"].(map[string]string)
-			validationMap[key] = errText
-		}
-
-		AbortWithData(http.StatusUnprocessableEntity, "輸入資料驗證失敗", errorData)
-	}
 }
 
 func Response(statusCode int, message string, data interface{}, w http.ResponseWriter) {

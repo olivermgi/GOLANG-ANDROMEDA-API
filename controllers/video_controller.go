@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/olivermgi/golang-crud-practice/common"
+	"github.com/olivermgi/golang-crud-practice/controllers/validator"
+	rules "github.com/olivermgi/golang-crud-practice/controllers/validator/rules/video"
 	"github.com/olivermgi/golang-crud-practice/services"
 )
 
@@ -14,32 +15,32 @@ import (
 func IndexVideo(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	videoListData := services.VideoListData{
+	ruleData := &rules.VideoIndex{
 		Page:       common.StringToInt(r.FormValue("page")),
 		PerPage:    common.StringToInt(r.FormValue("per_page")),
 		Sort:       r.FormValue("sort"),
 		SortColumn: r.FormValue("sort_column"),
 	}
 
-	common.ValidateStruct(videoListData)
+	validator.ValidateOrAbort(ruleData)
 
-	paginations := services.IndexVideo(videoListData)
+	paginations := services.IndexVideo(ruleData)
 
 	common.Response(http.StatusOK, "影片資料列表取得成功", paginations, w)
 }
 
 // 新增影片資料
 func StoreVideo(w http.ResponseWriter, r *http.Request) {
-	var videoData services.VideoData
+	var ruleData *rules.VideoStore
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&videoData)
+	err := decoder.Decode(&ruleData)
 	if err != nil {
-		common.Abort(http.StatusForbidden, "JSON 格式不正確")
+		common.Abort(http.StatusForbidden, "資料格式不正確")
 	}
 
-	common.ValidateStruct(videoData)
+	validator.ValidateOrAbort(ruleData)
 
-	video := services.StoreVideo(videoData)
+	video := services.StoreVideo(ruleData)
 
 	common.Response(http.StatusCreated, "影片資料新增成功", video, w)
 }
@@ -48,15 +49,14 @@ func StoreVideo(w http.ResponseWriter, r *http.Request) {
 func ShowVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤")
+		common.Abort(http.StatusForbidden, "video_id 資料格式不正確")
 	}
 
-	common.ValidateStruct(struct {
-		VideoId int `validate:"required,min=1" field:"video_id "`
-	}{videoId})
+	ruleData := &rules.VideoShow{VideoId: videoId}
+	validator.ValidateOrAbort(ruleData)
 
-	video := services.GetVideoOrAbort(videoId)
-	fmt.Println(video)
+	video := services.GetVideoOrAbort(ruleData.VideoId)
+
 	common.Response(http.StatusOK, "單筆影片資料取得成功", video, w)
 }
 
@@ -64,19 +64,20 @@ func ShowVideo(w http.ResponseWriter, r *http.Request) {
 func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤")
+		common.Abort(http.StatusForbidden, "video_id 資料格式不正確")
 	}
 
-	var videoData services.VideoData
+	var ruleData *rules.VideoUpdate
 	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&videoData)
+	err = decoder.Decode(&ruleData)
 	if err != nil {
-		common.Abort(http.StatusForbidden, "JSON 格式不正確")
+		common.Abort(http.StatusForbidden, "資料格式不正確")
 	}
 
-	common.ValidateStruct(videoData)
+	ruleData.VideoId = videoId
+	validator.ValidateOrAbort(ruleData)
 
-	video := services.UpdateVideo(videoId, videoData)
+	video := services.UpdateVideo(ruleData)
 
 	common.Response(http.StatusOK, "影片資料更新成功", video, w)
 }
@@ -88,7 +89,10 @@ func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 		common.Abort(http.StatusForbidden, "參數類型錯誤")
 	}
 
-	services.DeleteVideo(videoId)
+	ruleData := &rules.VideoDelete{VideoId: videoId}
+	validator.ValidateOrAbort(ruleData)
+
+	services.DeleteVideo(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片資料刪除成功", nil, w)
 }
