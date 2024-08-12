@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/olivermgi/golang-crud-practice/controllers/validator"
 	"github.com/olivermgi/golang-crud-practice/middleware"
 	_ "github.com/olivermgi/golang-crud-practice/models"
 	"github.com/olivermgi/golang-crud-practice/routes"

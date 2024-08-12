@@ -8,10 +8,10 @@ import (
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 
-var model *models.Video
+var videoModel *models.Video
 
 func IndexVideo(passedData *rules.VideoIndex) map[string]interface{} {
-	videos, total, last_page := model.Paginate(passedData.Page,
+	videos, total, last_page := videoModel.Paginate(passedData.Page,
 		passedData.PerPage, passedData.SortColumn, passedData.Sort)
 
 	return map[string]interface{}{
@@ -30,7 +30,7 @@ func StoreVideo(passedData *rules.VideoStore) *models.Video {
 		Description: passedData.Description,
 	}
 
-	video := model.Insert(dbData)
+	video := videoModel.Insert(dbData)
 
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料新增失敗")
@@ -40,14 +40,14 @@ func StoreVideo(passedData *rules.VideoStore) *models.Video {
 }
 
 func GetVideo(videoId int) *models.Video {
-	return model.Get(videoId)
+	return videoModel.Get(videoId)
 }
 
 func GetVideoOrAbort(videoId int) *models.Video {
 	video := GetVideo(videoId)
 
 	if video == nil {
-		common.Abort(http.StatusNotFound, "無此影片資料資料")
+		common.Abort(http.StatusNotFound, "無此影片資料")
 	}
 
 	return video
@@ -62,7 +62,7 @@ func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
 		Description: passedData.Description,
 	}
 
-	video := model.Update(passedData.VideoId, data)
+	video := videoModel.Update(passedData.VideoId, data)
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料更新失敗")
 	}
@@ -73,7 +73,7 @@ func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
 func DeleteVideo(videoId int) {
 	GetVideoOrAbort(videoId)
 
-	is_success := model.Delete(videoId)
+	is_success := videoModel.Delete(videoId)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
 	}

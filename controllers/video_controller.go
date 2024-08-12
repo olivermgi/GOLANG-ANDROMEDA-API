@@ -49,7 +49,7 @@ func StoreVideo(w http.ResponseWriter, r *http.Request) {
 func ShowVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "video_id 資料格式不正確")
+		common.Abort(http.StatusForbidden, "video_id 路徑參數不正確")
 	}
 
 	ruleData := &rules.VideoShow{VideoId: videoId}
@@ -64,7 +64,7 @@ func ShowVideo(w http.ResponseWriter, r *http.Request) {
 func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "video_id 資料格式不正確")
+		common.Abort(http.StatusForbidden, "video_id 路徑參數不正確")
 	}
 
 	var ruleData *rules.VideoUpdate
@@ -82,11 +82,11 @@ func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	common.Response(http.StatusOK, "影片資料更新成功", video, w)
 }
 
-// 刪除一筆公司資料
+// 刪除一筆影片資料
 func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 	videoId, err := strconv.Atoi(r.PathValue("video_id"))
 	if err != nil {
-		common.Abort(http.StatusForbidden, "參數類型錯誤")
+		common.Abort(http.StatusForbidden, "video_id 路徑參數不正確")
 	}
 
 	ruleData := &rules.VideoDelete{VideoId: videoId}

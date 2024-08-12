@@ -16,6 +16,10 @@ func RegisterAPIRoutes() {
 	http.HandleFunc("GET /api/internal/videos/{video_id}", controllers.ShowVideo)
 	http.HandleFunc("PUT /api/internal/videos/{video_id}", controllers.UpdateVideo)
 	http.HandleFunc("DELETE /api/internal/videos/{video_id}", controllers.DestroyVideo)
+
+	http.HandleFunc("POST /api/internal/videos/{video_id}/files", controllers.StoreVideoFile)
+	http.HandleFunc("GET /api/internal/videos/{video_id}/files", controllers.ShowVideoFile)
+	http.HandleFunc("DELETE /api/internal/videos/{video_id}/files", controllers.DestroyVideoFile)
 }
 
 // 404 Response

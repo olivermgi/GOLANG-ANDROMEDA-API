@@ -14,10 +14,9 @@ type Video struct {
 	Description string `json:"description"`
 	CreatedAt   string `json:"-"`
 	UpdatedAt   string `json:"-"`
-	DeletedAt   string `json:"-"`
 }
 
-// 新增公司單筆資料
+// 新增影片單筆資料
 func (c *Video) Insert(data Video) *Video {
 	result, err := DB.Exec("INSERT INTO videos(status, title, description, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
 		data.Status, data.Title, data.Description)
@@ -39,7 +38,7 @@ func (c *Video) Insert(data Video) *Video {
 	}
 }
 
-// 抓取影片資料，並回傳頁面格式
+// 抓取影片多筆資料，並回傳頁面格式
 func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
 	queryStr := fmt.Sprintf(
 		"SELECT id, status, title, updated_at FROM videos ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
@@ -71,6 +70,7 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 	return videos, count, lastPage
 }
 
+// 抓取影片全部資料
 func (c *Video) All() []Video {
 	queryStr := fmt.Sprintln("SELECT id, status, title, updated_at FROM videos")
 
@@ -129,7 +129,7 @@ func (c *Video) Update(id int, data Video) *Video {
 	}
 }
 
-// 以 id 刪除公司單筆資料
+// 以 id 刪除影片單筆資料
 func (c *Video) Delete(id int) bool {
 	_, err := DB.Exec("DELETE FROM videos WHERE id = ?", id)
 	if err != nil {
