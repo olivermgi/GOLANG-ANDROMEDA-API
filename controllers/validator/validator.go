@@ -79,7 +79,6 @@ func ValidateOrAbort(ruleData interface{}) {
 
 func fileExists(fl validator.FieldLevel) bool {
 	file := fl.Field().Interface().(multipart.File)
-	fmt.Println("test file:", file)
 	return file != nil
 }
 

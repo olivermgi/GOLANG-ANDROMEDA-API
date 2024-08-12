@@ -17,7 +17,8 @@ func StoreVideoFile(w http.ResponseWriter, r *http.Request) {
 		common.Abort(http.StatusForbidden, "video_id 路徑參數不正確")
 	}
 
-	services.GetVideoOrAbort(videoId)
+	serviceVideo := &services.ServiceVideo{}
+	serviceVideo.GetOrAbort(videoId)
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
@@ -28,7 +29,8 @@ func StoreVideoFile(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoFileStore{VideoId: videoId, File: file, Header: header}
 	validator.ValidateOrAbort(ruleData)
 
-	videoFile := services.StoreVideoFile(ruleData)
+	service := &services.VideoFileService{}
+	videoFile := service.Store(ruleData)
 
 	common.Response(http.StatusCreated, "影片資料新增成功", videoFile, w)
 }
@@ -40,10 +42,14 @@ func ShowVideoFile(w http.ResponseWriter, r *http.Request) {
 		common.Abort(http.StatusForbidden, "video_id 路徑參數不正確")
 	}
 
+	serviceVideo := &services.ServiceVideo{}
+	serviceVideo.GetOrAbort(videoId)
+
 	ruleData := &rules.VideoFileShow{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	videoFile := services.GetVideoFile(ruleData.VideoId)
+	service := &services.VideoFileService{}
+	videoFile := service.Get(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "單筆影片資料取得成功", videoFile, w)
 }
@@ -55,10 +61,14 @@ func DestroyVideoFile(w http.ResponseWriter, r *http.Request) {
 		common.Abort(http.StatusForbidden, "參數類型錯誤")
 	}
 
+	serviceVideo := &services.ServiceVideo{}
+	serviceVideo.GetOrAbort(videoId)
+
 	ruleData := &rules.VideoFileDelete{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	services.DeleteVideoFile(ruleData.VideoId)
+	service := &services.VideoFileService{}
+	service.Delete(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片檔案資料刪除成功", nil, w)
 }

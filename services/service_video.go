@@ -8,10 +8,12 @@ import (
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 
-var videoModel *models.Video
+type ServiceVideo struct {
+	model *models.Video
+}
 
-func IndexVideo(passedData *rules.VideoIndex) map[string]interface{} {
-	videos, total, last_page := videoModel.Paginate(passedData.Page,
+func (s *ServiceVideo) Index(passedData *rules.VideoIndex) map[string]interface{} {
+	videos, total, last_page := s.model.Paginate(passedData.Page,
 		passedData.PerPage, passedData.SortColumn, passedData.Sort)
 
 	return map[string]interface{}{
@@ -23,14 +25,14 @@ func IndexVideo(passedData *rules.VideoIndex) map[string]interface{} {
 	}
 }
 
-func StoreVideo(passedData *rules.VideoStore) *models.Video {
+func (s *ServiceVideo) Store(passedData *rules.VideoStore) *models.Video {
 	dbData := models.Video{
 		Status:      passedData.Status,
 		Title:       passedData.Title,
 		Description: passedData.Description,
 	}
 
-	video := videoModel.Insert(dbData)
+	video := s.model.Insert(dbData)
 
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料新增失敗")
@@ -39,12 +41,12 @@ func StoreVideo(passedData *rules.VideoStore) *models.Video {
 	return video
 }
 
-func GetVideo(videoId int) *models.Video {
-	return videoModel.Get(videoId)
+func (s *ServiceVideo) Get(videoId int) *models.Video {
+	return s.model.Get(videoId)
 }
 
-func GetVideoOrAbort(videoId int) *models.Video {
-	video := GetVideo(videoId)
+func (s *ServiceVideo) GetOrAbort(videoId int) *models.Video {
+	video := s.Get(videoId)
 
 	if video == nil {
 		common.Abort(http.StatusNotFound, "無此影片資料")
@@ -53,8 +55,8 @@ func GetVideoOrAbort(videoId int) *models.Video {
 	return video
 }
 
-func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
-	GetVideoOrAbort(passedData.VideoId)
+func (s *ServiceVideo) Update(passedData *rules.VideoUpdate) *models.Video {
+	s.GetOrAbort(passedData.VideoId)
 
 	data := models.Video{
 		Status:      passedData.Status,
@@ -62,7 +64,7 @@ func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
 		Description: passedData.Description,
 	}
 
-	video := videoModel.Update(passedData.VideoId, data)
+	video := s.model.Update(passedData.VideoId, data)
 	if video == nil {
 		common.Abort(http.StatusForbidden, "影片資料更新失敗")
 	}
@@ -70,10 +72,10 @@ func UpdateVideo(passedData *rules.VideoUpdate) *models.Video {
 	return video
 }
 
-func DeleteVideo(videoId int) {
-	GetVideoOrAbort(videoId)
+func (s *ServiceVideo) Delete(videoId int) {
+	s.GetOrAbort(videoId)
 
-	is_success := videoModel.Delete(videoId)
+	is_success := s.model.Delete(videoId)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
 	}

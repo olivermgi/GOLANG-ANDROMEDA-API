@@ -24,7 +24,8 @@ func IndexVideo(w http.ResponseWriter, r *http.Request) {
 
 	validator.ValidateOrAbort(ruleData)
 
-	paginations := services.IndexVideo(ruleData)
+	service := &services.ServiceVideo{}
+	paginations := service.Index(ruleData)
 
 	common.Response(http.StatusOK, "影片資料列表取得成功", paginations, w)
 }
@@ -40,7 +41,8 @@ func StoreVideo(w http.ResponseWriter, r *http.Request) {
 
 	validator.ValidateOrAbort(ruleData)
 
-	video := services.StoreVideo(ruleData)
+	service := &services.ServiceVideo{}
+	video := service.Store(ruleData)
 
 	common.Response(http.StatusCreated, "影片資料新增成功", video, w)
 }
@@ -55,7 +57,8 @@ func ShowVideo(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoShow{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	video := services.GetVideoOrAbort(ruleData.VideoId)
+	service := &services.ServiceVideo{}
+	video := service.GetOrAbort(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "單筆影片資料取得成功", video, w)
 }
@@ -77,7 +80,8 @@ func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	ruleData.VideoId = videoId
 	validator.ValidateOrAbort(ruleData)
 
-	video := services.UpdateVideo(ruleData)
+	service := &services.ServiceVideo{}
+	video := service.Update(ruleData)
 
 	common.Response(http.StatusOK, "影片資料更新成功", video, w)
 }
@@ -92,7 +96,8 @@ func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoDelete{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	services.DeleteVideo(ruleData.VideoId)
+	service := &services.ServiceVideo{}
+	service.Delete(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片資料刪除成功", nil, w)
 }

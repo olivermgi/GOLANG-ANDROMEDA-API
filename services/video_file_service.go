@@ -10,10 +10,12 @@ import (
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 
-var videoFileModel *models.VideoFile
+type VideoFileService struct {
+	model *models.VideoFile
+}
 
-func StoreVideoFile(passedData *rules.VideoFileStore) *models.VideoFile {
-	if GetVideoFile(passedData.VideoId) != nil {
+func (s *VideoFileService) Store(passedData *rules.VideoFileStore) *models.VideoFile {
+	if s.Get(passedData.VideoId) != nil {
 		common.Abort(http.StatusForbidden, "影片檔案資料已存在")
 	}
 
@@ -21,7 +23,7 @@ func StoreVideoFile(passedData *rules.VideoFileStore) *models.VideoFile {
 	var name string
 	for {
 		name = uuid.New().String()[:8]
-		if videoFileModel.GetByName(name) == nil {
+		if s.model.GetByName(name) == nil {
 			break
 		}
 		log.Println("影片檔案名稱生成重複，名稱：", name)
@@ -32,7 +34,7 @@ func StoreVideoFile(passedData *rules.VideoFileStore) *models.VideoFile {
 		Name:    name,
 	}
 
-	videoFile := videoFileModel.Insert(dbData)
+	videoFile := s.model.Insert(dbData)
 
 	if videoFile == nil {
 		common.Abort(http.StatusForbidden, "影片檔案資料新增失敗")
@@ -43,12 +45,12 @@ func StoreVideoFile(passedData *rules.VideoFileStore) *models.VideoFile {
 	return videoFile
 }
 
-func GetVideoFile(videoId int) *models.VideoFile {
-	return videoFileModel.GetByVideoId(videoId)
+func (s *VideoFileService) Get(videoId int) *models.VideoFile {
+	return s.model.GetByVideoId(videoId)
 }
 
-func GetVideoFileOrAbort(videoId int) *models.VideoFile {
-	videoFile := GetVideoFile(videoId)
+func (s *VideoFileService) GetOrAbort(videoId int) *models.VideoFile {
+	videoFile := s.Get(videoId)
 
 	if videoFile == nil {
 		common.Abort(http.StatusNotFound, "無此影片檔案資料")
@@ -57,10 +59,10 @@ func GetVideoFileOrAbort(videoId int) *models.VideoFile {
 	return videoFile
 }
 
-func DeleteVideoFile(videoId int) {
-	GetVideoFileOrAbort(videoId)
+func (s *VideoFileService) Delete(videoId int) {
+	s.GetOrAbort(videoId)
 
-	is_success := videoFileModel.SoftDelete(videoId)
+	is_success := s.model.SoftDelete(videoId)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
 	}
