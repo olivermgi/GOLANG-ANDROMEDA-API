@@ -32,6 +32,8 @@ func StoreVideoFile(w http.ResponseWriter, r *http.Request) {
 	service := &services.VideoFileService{}
 	videoFile := service.Store(ruleData)
 
+	go service.UploadAndTransformVideoFile(videoFile, file)
+
 	common.Response(http.StatusCreated, "影片資料新增成功", videoFile, w)
 }
 
@@ -49,7 +51,7 @@ func ShowVideoFile(w http.ResponseWriter, r *http.Request) {
 	validator.ValidateOrAbort(ruleData)
 
 	service := &services.VideoFileService{}
-	videoFile := service.Get(ruleData.VideoId)
+	videoFile := service.GetOrAbort(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "單筆影片資料取得成功", videoFile, w)
 }

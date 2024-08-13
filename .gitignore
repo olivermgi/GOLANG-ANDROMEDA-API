@@ -1,4 +1,5 @@
 tmp/*
+secrets/*
 .air.toml
 .env
 .DS_Store
