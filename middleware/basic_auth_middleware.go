@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/olivermgi/golang-crud-practice/common"
+	"github.com/olivermgi/golang-crud-practice/config"
 )
 
 type BasicAuthMiddleware struct {
@@ -22,7 +23,9 @@ func (m *BasicAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		common.Abort(http.StatusUnauthorized, "認證不合法")
 	}
 
-	if username != "admin" || password != "123456" {
+	authInfo := config.GetAuthConfig()
+
+	if username != authInfo["username"] || password != authInfo["password"] {
 		common.Abort(http.StatusUnauthorized, "帳號密碼不正確")
 	}
 }

@@ -8,12 +8,13 @@ import (
 )
 
 type Video struct {
-	Id          int    `json:"id"`
-	Status      string `json:"status"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	CreatedAt   string `json:"-"`
-	UpdatedAt   string `json:"-"`
+	Id          int         `json:"id"`
+	Status      string      `json:"status"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	VideoFile   interface{} `json:"video_file"`
+	CreatedAt   string      `json:"-"`
+	UpdatedAt   string      `json:"-"`
 }
 
 // 新增影片單筆資料
@@ -104,6 +105,16 @@ func (c *Video) Get(id int) *Video {
 	if err != nil {
 		log.Println("取得單筆影片資料失敗，錯誤訊息：", err)
 		return nil
+	}
+
+	var videoFile VideoFile
+	err = DB.QueryRow("SELECT id, status, name FROM video_files WHERE video_id = ? AND deleted_at IS NULL", id).
+		Scan(&videoFile.Id, &videoFile.Status, &videoFile.Name)
+
+	if err != nil {
+		video.VideoFile = struct{}{}
+	} else {
+		video.VideoFile = videoFile
 	}
 
 	return &video

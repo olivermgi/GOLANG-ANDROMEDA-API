@@ -5,7 +5,7 @@ import (
 )
 
 type VideoFile struct {
-	Id        int    `json:"id"`
+	Id        int    `json:"-"`
 	Status    string `json:"status"`
 	Name      string `json:"name"`
 	VideoId   int    `json:"-"`

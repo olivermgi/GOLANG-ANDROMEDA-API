@@ -5,6 +5,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,8 +33,10 @@ func (s *VideoFileService) TransformVideoFile(videoFile *models.VideoFile) bool 
 	}
 
 	filename := videoFile.Name
+	extension := filepath.Ext(filename)
+
 	inputPath := fmt.Sprintf("%s/%s", filename[:1], filename)
-	outputPaht := fmt.Sprintf("%s/%s/", filename[:1], filename)
+	outputPaht := fmt.Sprintf("%s/%s/", filename[:1], filename[0:len(filename)-len(extension)])
 
 	if !s.model.UpdateStatus(videoFile.VideoId, "transforming") {
 		return false
@@ -46,17 +49,24 @@ func (s *VideoFileService) TransformVideoFile(videoFile *models.VideoFile) bool 
 
 	go func() {
 		var count uint8
+		var is_success = false
 		for count < 120 {
 			jobState, _ := vod.Transcoder.GetJobState(jobID)
 			if jobState == "SUCCEEDED" {
 				s.model.UpdateStatus(videoFile.VideoId, "transformed")
-				return
+				is_success = true
+				break
 			}
 
 			time.Sleep(time.Second)
 			count++
 		}
-		s.model.UpdateStatus(videoFile.VideoId, "transform_failed")
+
+		if !is_success {
+			s.model.UpdateStatus(videoFile.VideoId, "transform_failed")
+		}
+
+		vod.Transcoder.DeleteJob(jobID)
 	}()
 
 	videoFile.Status = "transforming"

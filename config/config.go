@@ -39,3 +39,10 @@ func GetGcpConfig() map[string]map[string]string {
 		},
 	}
 }
+
+func GetAuthConfig() map[string]string {
+	return map[string]string{
+		"username": os.Getenv("BASIC_AUTH_USERNAME"),
+		"password": os.Getenv("BASIC_AUTH_PASSWORD"),
+	}
+}

@@ -124,3 +124,20 @@ func (c *clientTranscoder) GetJobState(jobID string) (string, error) {
 
 	return fmt.Sprintf("%v", response.State), nil
 }
+
+func (c *clientTranscoder) DeleteJob(jobID string) error {
+	req := &transcoderpb.DeleteJobRequest{
+		Name: jobID,
+	}
+
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	defer cancel()
+
+	err := c.cl.DeleteJob(ctx, req)
+	if err != nil {
+		return fmt.Errorf("DeleteJob: %w", err)
+	}
+
+	return nil
+}
