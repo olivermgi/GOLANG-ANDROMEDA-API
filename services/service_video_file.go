@@ -137,6 +137,8 @@ func (s *ServiceVideoFile) GetOrAbort(videoId int) *models.VideoFile {
 }
 
 func (s *ServiceVideoFile) Delete(videoId int) {
+	s.GetOrAbort(videoId)
+
 	is_success := s.model.SoftDelete(videoId)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
