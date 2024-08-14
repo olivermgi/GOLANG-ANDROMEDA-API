@@ -64,7 +64,7 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 	}
 
 	count := 0
-	DB.QueryRow("SELECT COUNT(*) FROM videos").Scan(&count)
+	DB.QueryRow("SELECT COUNT(*) FROM videos WHERE deleted_at IS NULL").Scan(&count)
 	lastPage = int(math.Ceil(float64(count) / float64(perPage)))
 	return videos, count, lastPage
 }
