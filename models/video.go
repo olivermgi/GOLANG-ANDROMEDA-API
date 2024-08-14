@@ -41,7 +41,7 @@ func (c *Video) Insert(data Video) *Video {
 // 抓取影片多筆資料，並回傳頁面格式
 func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
 	queryStr := fmt.Sprintf(
-		"SELECT id, status, title, updated_at FROM videos deleted_at IS NULL ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
+		"SELECT id, status, title, updated_at FROM videos WHERE deleted_at IS NULL ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
 		sortColume, sort,
 	)
 
