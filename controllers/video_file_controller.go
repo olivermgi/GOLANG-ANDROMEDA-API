@@ -29,7 +29,7 @@ func StoreVideoFile(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoFileStore{VideoId: videoId, File: file, Header: header}
 	validator.ValidateOrAbort(ruleData)
 
-	service := &services.VideoFileService{}
+	service := &services.ServiceVideoFile{}
 	videoFile := service.Store(ruleData)
 
 	go service.UploadAndTransformVideoFile(videoFile, file)
@@ -50,7 +50,7 @@ func ShowVideoFile(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoFileShow{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	service := &services.VideoFileService{}
+	service := &services.ServiceVideoFile{}
 	videoFile := service.GetOrAbort(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "單筆影片資料取得成功", videoFile, w)
@@ -69,7 +69,7 @@ func DestroyVideoFile(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoFileDelete{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
-	service := &services.VideoFileService{}
+	service := &services.ServiceVideoFile{}
 	service.Delete(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片檔案資料刪除成功", nil, w)

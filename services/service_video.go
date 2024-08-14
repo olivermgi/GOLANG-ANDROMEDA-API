@@ -41,12 +41,12 @@ func (s *ServiceVideo) Store(passedData *rules.VideoStore) *models.Video {
 	return video
 }
 
-func (s *ServiceVideo) Get(videoId int) *models.Video {
-	return s.model.Get(videoId)
+func (s *ServiceVideo) Get(id int) *models.Video {
+	return s.model.Get(id)
 }
 
-func (s *ServiceVideo) GetOrAbort(videoId int) *models.Video {
-	video := s.Get(videoId)
+func (s *ServiceVideo) GetOrAbort(id int) *models.Video {
+	video := s.Get(id)
 
 	if video == nil {
 		common.Abort(http.StatusNotFound, "無此影片資料")
@@ -72,10 +72,10 @@ func (s *ServiceVideo) Update(passedData *rules.VideoUpdate) *models.Video {
 	return video
 }
 
-func (s *ServiceVideo) Delete(videoId int) {
-	s.GetOrAbort(videoId)
+func (s *ServiceVideo) Delete(id int) {
+	s.GetOrAbort(id)
 
-	is_success := s.model.Delete(videoId)
+	is_success := s.model.SoftDelete(id)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
 	}

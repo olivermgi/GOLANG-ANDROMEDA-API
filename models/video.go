@@ -15,6 +15,7 @@ type Video struct {
 	VideoFile   interface{} `json:"video_file,omitempty"`
 	CreatedAt   string      `json:"-"`
 	UpdatedAt   string      `json:"-"`
+	DeletedAt   string      `json:"-"`
 }
 
 // 新增影片單筆資料
@@ -40,7 +41,7 @@ func (c *Video) Insert(data Video) *Video {
 // 抓取影片多筆資料，並回傳頁面格式
 func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
 	queryStr := fmt.Sprintf(
-		"SELECT id, status, title, updated_at FROM videos ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
+		"SELECT id, status, title, updated_at FROM videos deleted_at IS NULL ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
 		sortColume, sort,
 	)
 
@@ -70,7 +71,7 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 
 // 抓取影片全部資料
 func (c *Video) All() []Video {
-	queryStr := fmt.Sprintln("SELECT id, status, title, updated_at FROM videos")
+	queryStr := fmt.Sprintln("SELECT id, status, title, updated_at FROM videos deleted_at IS NULL")
 
 	rows, err := DB.Query(queryStr)
 	if err != nil {
@@ -95,7 +96,7 @@ func (c *Video) All() []Video {
 // 以 id 抓取影片單筆資料
 func (c *Video) Get(id int) *Video {
 	var video Video
-	err := DB.QueryRow("SELECT id, status, title, description FROM videos WHERE id = ?", id).
+	err := DB.QueryRow("SELECT id, status, title, description FROM videos WHERE id = ? AND deleted_at IS NULL", id).
 		Scan(&video.Id, &video.Status, &video.Title, &video.Description)
 
 	if err != nil {
@@ -119,7 +120,7 @@ func (c *Video) Get(id int) *Video {
 func (c *Video) Update(id int, data Video) *Video {
 	now := time.Now().Format(time.DateTime)
 
-	_, err := DB.Exec("UPDATE videos SET status = ?, title = ?, description = ?, updated_at = ? WHERE id = ?",
+	_, err := DB.Exec("UPDATE videos SET status = ?, title = ?, description = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL",
 		data.Status, data.Title, data.Description, now, id)
 
 	if err != nil {
@@ -134,8 +135,18 @@ func (c *Video) Update(id int, data Video) *Video {
 	}
 }
 
+// 以 id 軟刪除公司單筆資料
+func (c *Video) SoftDelete(id int) bool {
+	now := time.Now().Format(time.DateTime)
+
+	_, err := DB.Exec("UPDATE videos SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL",
+		now, id)
+
+	return err == nil
+}
+
 // 以 id 刪除影片單筆資料
 func (c *Video) Delete(id int) bool {
-	_, err := DB.Exec("DELETE FROM videos WHERE id = ?", id)
+	_, err := DB.Exec("DELETE FROM videos WHERE id = ? AND deleted_at IS NULL", id)
 	return err == nil
 }

@@ -15,11 +15,11 @@ import (
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 
-type VideoFileService struct {
+type ServiceVideoFile struct {
 	model *models.VideoFile
 }
 
-func (s *VideoFileService) UploadAndTransformVideoFile(videoFile *models.VideoFile, file multipart.File) {
+func (s *ServiceVideoFile) UploadAndTransformVideoFile(videoFile *models.VideoFile, file multipart.File) {
 	if s.UploadVideoFile(videoFile, file) {
 		s.TransformVideoFile(videoFile)
 	} else {
@@ -27,7 +27,7 @@ func (s *VideoFileService) UploadAndTransformVideoFile(videoFile *models.VideoFi
 	}
 }
 
-func (s *VideoFileService) TransformVideoFile(videoFile *models.VideoFile) bool {
+func (s *ServiceVideoFile) TransformVideoFile(videoFile *models.VideoFile) bool {
 	if videoFile == nil || videoFile.Status != "uploaded" {
 		return false
 	}
@@ -73,7 +73,7 @@ func (s *VideoFileService) TransformVideoFile(videoFile *models.VideoFile) bool 
 	return true
 }
 
-func (s *VideoFileService) UploadVideoFile(videoFile *models.VideoFile, file multipart.File) bool {
+func (s *ServiceVideoFile) UploadVideoFile(videoFile *models.VideoFile, file multipart.File) bool {
 	filename := videoFile.Name
 	path := fmt.Sprintf("mp4/%s/%s", filename[:1], filename)
 
@@ -93,7 +93,7 @@ func (s *VideoFileService) UploadVideoFile(videoFile *models.VideoFile, file mul
 	return true
 }
 
-func (s *VideoFileService) Store(passedData *rules.VideoFileStore) *models.VideoFile {
+func (s *ServiceVideoFile) Store(passedData *rules.VideoFileStore) *models.VideoFile {
 	if s.Get(passedData.VideoId) != nil {
 		common.Abort(http.StatusForbidden, "影片檔案資料已存在")
 	}
@@ -122,11 +122,11 @@ func (s *VideoFileService) Store(passedData *rules.VideoFileStore) *models.Video
 	return videoFile
 }
 
-func (s *VideoFileService) Get(videoId int) *models.VideoFile {
+func (s *ServiceVideoFile) Get(videoId int) *models.VideoFile {
 	return s.model.GetByVideoId(videoId)
 }
 
-func (s *VideoFileService) GetOrAbort(videoId int) *models.VideoFile {
+func (s *ServiceVideoFile) GetOrAbort(videoId int) *models.VideoFile {
 	videoFile := s.Get(videoId)
 
 	if videoFile == nil {
@@ -136,7 +136,7 @@ func (s *VideoFileService) GetOrAbort(videoId int) *models.VideoFile {
 	return videoFile
 }
 
-func (s *VideoFileService) Delete(videoId int) {
+func (s *ServiceVideoFile) Delete(videoId int) {
 	s.GetOrAbort(videoId)
 
 	is_success := s.model.SoftDelete(videoId)
