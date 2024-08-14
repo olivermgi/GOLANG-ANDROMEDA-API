@@ -56,8 +56,6 @@ func (s *ServiceVideo) GetOrAbort(id int) *models.Video {
 }
 
 func (s *ServiceVideo) Update(passedData *rules.VideoUpdate) *models.Video {
-	s.GetOrAbort(passedData.VideoId)
-
 	data := models.Video{
 		Status:      passedData.Status,
 		Title:       passedData.Title,
@@ -73,8 +71,6 @@ func (s *ServiceVideo) Update(passedData *rules.VideoUpdate) *models.Video {
 }
 
 func (s *ServiceVideo) Delete(id int) {
-	s.GetOrAbort(id)
-
 	is_success := s.model.SoftDelete(id)
 	if !is_success {
 		common.Abort(http.StatusForbidden, "影片資料刪除失敗")

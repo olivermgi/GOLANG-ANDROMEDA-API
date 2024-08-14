@@ -81,6 +81,7 @@ func UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	validator.ValidateOrAbort(ruleData)
 
 	service := &services.ServiceVideo{}
+	service.GetOrAbort(ruleData.VideoId)
 	video := service.Update(ruleData)
 
 	common.Response(http.StatusOK, "影片資料更新成功", video, w)
@@ -97,6 +98,7 @@ func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 	validator.ValidateOrAbort(ruleData)
 
 	service := &services.ServiceVideo{}
+	service.GetOrAbort(ruleData.VideoId)
 	service.Delete(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片資料刪除成功", nil, w)

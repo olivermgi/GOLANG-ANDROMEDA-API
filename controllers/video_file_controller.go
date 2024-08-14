@@ -70,6 +70,7 @@ func DestroyVideoFile(w http.ResponseWriter, r *http.Request) {
 	validator.ValidateOrAbort(ruleData)
 
 	service := &services.ServiceVideoFile{}
+	service.GetOrAbort(videoId)
 	service.Delete(ruleData.VideoId)
 
 	common.Response(http.StatusOK, "影片檔案資料刪除成功", nil, w)
