@@ -135,7 +135,7 @@ func (c *Video) Update(id int, data Video) *Video {
 	}
 }
 
-// 以 id 軟刪除公司單筆資料
+// 以 id 軟刪除單筆影片資料
 func (c *Video) SoftDelete(id int) bool {
 	now := time.Now().Format(time.DateTime)
 

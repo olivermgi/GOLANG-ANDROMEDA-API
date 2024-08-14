@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -74,6 +75,50 @@ func (c *clientUploader) UploadFile(file multipart.File, object string) error {
 	}
 	if err := wc.Close(); err != nil {
 		return fmt.Errorf("Writer.Close: %v", err)
+	}
+
+	return nil
+}
+
+func (c *clientUploader) MoveFile(object string, dstName string) error {
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	src := c.cl.Bucket(c.bucketName).Object(object)
+	dst := c.cl.Bucket(c.bucketName).Object(dstName)
+
+	dst = dst.If(storage.Conditions{DoesNotExist: true})
+
+	if _, err := dst.CopierFrom(src).Run(ctx); err != nil {
+		return fmt.Errorf("Object(%q).CopierFrom(%q).Run: %w", dstName, object, err)
+	}
+	if err := src.Delete(ctx); err != nil {
+		return fmt.Errorf("Object(%q).Delete: %w", object, err)
+	}
+
+	return nil
+}
+
+func (c *clientUploader) MoveFolder(sourcePrefix, destinationPrefix string) error {
+	ctx := context.Background()
+	it := c.cl.Bucket(c.bucketName).Objects(ctx, &storage.Query{Prefix: sourcePrefix})
+
+	for {
+		objAttrs, err := it.Next()
+		if err == storage.ErrObjectNotExist {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("failed to list objects: %w", err)
+		}
+
+		sourceName := objAttrs.Name
+		destinationName := strings.Replace(sourceName, sourcePrefix, destinationPrefix, 1)
+
+		if err := c.MoveFile(sourceName, destinationName); err != nil {
+			return fmt.Errorf("failed to move file: %w", err)
+		}
 	}
 
 	return nil

@@ -37,8 +37,8 @@ func (c *VideoFile) Insert(data VideoFile) *VideoFile {
 // 以 name 抓取影片單筆檔案資料
 func (c *VideoFile) GetByVideoId(videoId int) *VideoFile {
 	var videoFile VideoFile
-	err := DB.QueryRow("SELECT id, status, name FROM video_files WHERE video_id = ? AND deleted_at IS NULL", videoId).
-		Scan(&videoFile.Id, &videoFile.Status, &videoFile.Name)
+	err := DB.QueryRow("SELECT id, status, name, video_id FROM video_files WHERE video_id = ? AND deleted_at IS NULL", videoId).
+		Scan(&videoFile.Id, &videoFile.Status, &videoFile.Name, &videoFile.VideoId)
 
 	if err != nil {
 		return nil
@@ -69,12 +69,11 @@ func (c *VideoFile) UpdateStatus(videoId int, status string) bool {
 	return err == nil
 }
 
-// 以 video_id 軟刪除公司單筆資料
 func (c *VideoFile) SoftDelete(videoId int) bool {
 	now := time.Now().Format(time.DateTime)
 
-	_, err := DB.Exec("UPDATE video_files SET deleted_at = ? WHERE video_id = ? AND deleted_at IS NULL",
-		now, videoId)
+	_, err := DB.Exec("UPDATE video_files SET status = ?, deleted_at = ? WHERE video_id = ? AND deleted_at IS NULL",
+		"deleted", now, videoId)
 
 	return err == nil
 }

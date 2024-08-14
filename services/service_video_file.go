@@ -6,6 +6,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
+	"slices"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -95,7 +97,7 @@ func (s *ServiceVideoFile) UploadVideoFile(videoFile *models.VideoFile, file mul
 
 func (s *ServiceVideoFile) Store(passedData *rules.VideoFileStore) *models.VideoFile {
 	if s.Get(passedData.VideoId) != nil {
-		common.Abort(http.StatusForbidden, "影片檔案資料已存在")
+		common.Abort(http.StatusForbidden, "影片檔案已存在")
 	}
 
 	// 產生影片檔名
@@ -116,7 +118,7 @@ func (s *ServiceVideoFile) Store(passedData *rules.VideoFileStore) *models.Video
 	videoFile := s.model.Insert(dbData)
 
 	if videoFile == nil {
-		common.Abort(http.StatusForbidden, "影片檔案資料新增失敗")
+		common.Abort(http.StatusForbidden, "影片檔案新增失敗")
 	}
 
 	return videoFile
@@ -130,20 +132,57 @@ func (s *ServiceVideoFile) GetOrAbort(videoId int) *models.VideoFile {
 	videoFile := s.Get(videoId)
 
 	if videoFile == nil {
-		common.Abort(http.StatusNotFound, "無此影片檔案資料")
+		common.Abort(http.StatusNotFound, "無此影片檔案")
 	}
 
 	return videoFile
 }
 
 func (s *ServiceVideoFile) Delete(videoId int) {
-	s.GetOrAbort(videoId)
+	videoFile := s.GetOrAbort(videoId)
 
-	is_success := s.model.SoftDelete(videoId)
-	if !is_success {
-		common.Abort(http.StatusForbidden, "影片資料刪除失敗")
+	if !slices.Contains([]string{"stanby", "uploaded", "transformed", "delete_failed"}, videoFile.Status) {
+		common.Abort(http.StatusForbidden, "影片檔案資料正在處理，無法刪除檔案")
 	}
 
-	// 發送關閉正在轉檔的 Job 信號
-	// 將轉好的串流檔移至其他資料夾
+	is_success := s.model.UpdateStatus(videoFile.VideoId, "deleting")
+	if !is_success {
+		common.Abort(http.StatusForbidden, "影片檔案刪除失敗")
+	}
+
+	videoFile.Status = "deleting"
+	go s.hiddenVideo(videoFile)
+}
+
+func (s *ServiceVideoFile) hiddenVideo(videoFile *models.VideoFile) {
+	var wg sync.WaitGroup
+
+	filename := videoFile.Name
+	extension := filepath.Ext(filename)
+	filePath := fmt.Sprintf("%s/%s", filename[:1], filename)
+	streamPath := fmt.Sprintf("%s/%s/", filename[:1], filename[0:len(filename)-len(extension)])
+	mp4Dir := "mp4/"
+	streamsDir := "streams/"
+	deletedDir := "deleted/"
+
+	wg.Add(2)
+	deletedCount := 0
+	go func() {
+		defer wg.Done()
+		vod.Uploader.MoveFile(mp4Dir+filePath, deletedDir+filePath)
+		deletedCount++
+	}()
+
+	go func() {
+		defer wg.Done()
+		vod.Uploader.MoveFolder(streamsDir+streamPath, deletedDir+streamPath)
+		deletedCount++
+	}()
+	wg.Wait()
+	if deletedCount != 2 {
+		s.model.UpdateStatus(videoFile.VideoId, "delete_failed")
+		return
+	}
+
+	s.model.SoftDelete(videoFile.VideoId)
 }

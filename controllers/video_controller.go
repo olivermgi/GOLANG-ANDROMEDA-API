@@ -96,6 +96,12 @@ func DestroyVideo(w http.ResponseWriter, r *http.Request) {
 	ruleData := &rules.VideoDelete{VideoId: videoId}
 	validator.ValidateOrAbort(ruleData)
 
+	serviceVideoFile := &services.ServiceVideoFile{}
+	videoFile := serviceVideoFile.Get(ruleData.VideoId)
+	if videoFile != nil {
+		common.Abort(http.StatusForbidden, "此影片的檔案還未刪除")
+	}
+
 	service := &services.ServiceVideo{}
 	service.Delete(ruleData.VideoId)
 
