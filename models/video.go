@@ -12,7 +12,7 @@ type Video struct {
 	Status      string      `json:"status"`
 	Title       string      `json:"title"`
 	Description string      `json:"description"`
-	VideoFile   interface{} `json:"video_file"`
+	VideoFile   interface{} `json:"video_file,omitempty"`
 	CreatedAt   string      `json:"-"`
 	UpdatedAt   string      `json:"-"`
 }
