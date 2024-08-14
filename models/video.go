@@ -22,12 +22,10 @@ func (c *Video) Insert(data Video) *Video {
 	result, err := DB.Exec("INSERT INTO videos(status, title, description, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
 		data.Status, data.Title, data.Description)
 	if err != nil {
-		log.Println("新增影片資料失敗，錯誤訊息：", err)
 		return nil
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		log.Println("取得新增的影片 ID 失敗，錯誤訊息：", err)
 		return nil
 	}
 
@@ -59,7 +57,6 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 		var video Video
 		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
 		if err != nil {
-			log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
 			return make([]Video, 0), 0, 0
 		}
 		videos = append(videos, video)
@@ -87,7 +84,6 @@ func (c *Video) All() []Video {
 		var video Video
 		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
 		if err != nil {
-			log.Println("取得多筆公司資料失敗，錯誤訊息：", err)
 			return make([]Video, 0)
 		}
 		videos = append(videos, video)
@@ -103,7 +99,6 @@ func (c *Video) Get(id int) *Video {
 		Scan(&video.Id, &video.Status, &video.Title, &video.Description)
 
 	if err != nil {
-		log.Println("取得單筆影片資料失敗，錯誤訊息：", err)
 		return nil
 	}
 
@@ -128,7 +123,6 @@ func (c *Video) Update(id int, data Video) *Video {
 		data.Status, data.Title, data.Description, now, id)
 
 	if err != nil {
-		log.Println("更新影片資料失敗，錯誤訊息：", err)
 		return nil
 	}
 
@@ -143,10 +137,5 @@ func (c *Video) Update(id int, data Video) *Video {
 // 以 id 刪除影片單筆資料
 func (c *Video) Delete(id int) bool {
 	_, err := DB.Exec("DELETE FROM videos WHERE id = ?", id)
-	if err != nil {
-		log.Println("刪除影片資料失敗，錯誤訊息：", err)
-		return false
-	}
-
-	return true
+	return err == nil
 }
