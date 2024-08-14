@@ -69,9 +69,11 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 	return videos, count, lastPage
 }
 
-// 抓取影片全部資料
-func (c *Video) All() []Video {
-	queryStr := fmt.Sprintln("SELECT id, status, title, updated_at FROM videos deleted_at IS NULL")
+func (c *Video) AllPublish() []Video {
+	queryStr := fmt.Sprintln(`
+	SELECT videos.id, videos.status, title, description, video_files.name, videos.updated_at FROM videos 
+	INNER JOIN video_files ON videos.id = video_files.video_id
+	WHERE videos.status = 'publish' AND videos.deleted_at IS NULL AND video_files.status = 'transformed' ORDER BY videos.updated_at DESC`)
 
 	rows, err := DB.Query(queryStr)
 	if err != nil {
@@ -83,10 +85,12 @@ func (c *Video) All() []Video {
 	videos := make([]Video, 0)
 	for rows.Next() {
 		var video Video
-		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
+		var videoFile VideoFile
+		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.Description, &videoFile.Name, &video.UpdatedAt)
 		if err != nil {
 			return make([]Video, 0)
 		}
+		video.VideoFile = videoFile
 		videos = append(videos, video)
 	}
 
