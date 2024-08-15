@@ -11,7 +11,7 @@ type Video struct {
 	Id          int         `json:"id"`
 	Status      string      `json:"status"`
 	Title       string      `json:"title"`
-	Description string      `json:"description"`
+	Description string      `json:"description,omitempty"`
 	VideoFile   interface{} `json:"video_file,omitempty"`
 	CreatedAt   string      `json:"-"`
 	UpdatedAt   string      `json:"-"`
