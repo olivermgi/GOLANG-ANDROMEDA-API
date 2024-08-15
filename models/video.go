@@ -11,7 +11,7 @@ type Video struct {
 	Id          int         `json:"id"`
 	Status      string      `json:"status"`
 	Title       string      `json:"title"`
-	Description string      `json:"description,omitempty"`
+	Description string      `json:"description"`
 	VideoFile   interface{} `json:"video_file,omitempty"`
 	CreatedAt   string      `json:"-"`
 	UpdatedAt   string      `json:"-"`
@@ -41,7 +41,7 @@ func (c *Video) Insert(data Video) *Video {
 // 抓取影片多筆資料，並回傳頁面格式
 func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) (videos []Video, total int, lastPage int) {
 	queryStr := fmt.Sprintf(
-		"SELECT id, status, title, updated_at FROM videos WHERE deleted_at IS NULL ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
+		"SELECT id, status, title, description updated_at FROM videos WHERE deleted_at IS NULL ORDER BY %s %s, id DESC LIMIT ? OFFSET ?",
 		sortColume, sort,
 	)
 
@@ -56,7 +56,7 @@ func (c *Video) Paginate(page int, perPage int, sortColume string, sort string) 
 	videos = make([]Video, 0)
 	for rows.Next() {
 		var video Video
-		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.UpdatedAt)
+		err := rows.Scan(&video.Id, &video.Status, &video.Title, &video.Description, &video.UpdatedAt)
 		if err != nil {
 			return make([]Video, 0), 0, 0
 		}
