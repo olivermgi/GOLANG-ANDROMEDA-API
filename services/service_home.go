@@ -26,8 +26,8 @@ func (s *ServiceHome) Home() []map[string]interface{} {
 		videoFile := videoMap["video_file"].(map[string]interface{})
 		filename := videoFile["name"].(string)
 		extension := filepath.Ext(filename)
-		videoFile["hls_path"] = fmt.Sprintf("https://static.olivermg.fun/%s/%s/manifest.m3u8", filename[:1], filename[0:len(filename)-len(extension)])
-		videoFile["mpd_path"] = fmt.Sprintf("https://static.olivermg.fun/%s/%s/manifest.mpd", filename[:1], filename[0:len(filename)-len(extension)])
+		videoFile["hls_path"] = fmt.Sprintf("https://static.olivermg.fun/streams/%s/%s/manifest.m3u8", filename[:1], filename[0:len(filename)-len(extension)])
+		videoFile["mpd_path"] = fmt.Sprintf("https://static.olivermg.fun/streams/%s/%s/manifest.mpd", filename[:1], filename[0:len(filename)-len(extension)])
 		delete(videoFile, "name")
 		videoMaps[key]["video_file"] = videoFile
 	}
