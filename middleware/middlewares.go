@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/olivermgi/golang-crud-practice/common"
+	"github.com/olivermgi/golang-crud-practice/config"
 )
 
 type Middlewares struct {
@@ -24,9 +25,14 @@ func (m *Middlewares) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		errMessage := ""
+		if !config.IsProduction() {
+			errMessage = fmt.Sprint(err)
+		}
+
 		statusCode := 500
 		message := "未知的錯誤"
-		errors := common.ErrorMap{"error": fmt.Sprint(err)}
+		errors := common.ErrorMap{"error": errMessage}
 		httpJsonError, ok := err.(*common.HttpJsonError)
 		if ok {
 			statusCode = httpJsonError.StatusCode

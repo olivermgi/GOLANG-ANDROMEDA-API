@@ -7,11 +7,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var env string
+
 func init() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("讀取不到 .env 檔")
 	}
+
+	env = os.Getenv("APP_ENV")
+}
+
+func IsProduction() bool {
+	return env == "production"
 }
 
 func GetMysqlConfig() map[string]string {
