@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 
 	"github.com/olivermgi/golang-crud-practice/common"
 	"github.com/olivermgi/golang-crud-practice/config"
@@ -29,8 +30,6 @@ func (m *Middlewares) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errMessage := ""
 		if !config.IsProduction() {
 			errMessage = fmt.Sprint(err)
-		} else {
-			log.Println(err)
 		}
 
 		statusCode := 500
@@ -41,6 +40,11 @@ func (m *Middlewares) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			statusCode = httpJsonError.StatusCode
 			message = httpJsonError.Message
 			errors = httpJsonError.ErrorData
+		} else {
+			log.Println(err)
+			buf := make([]byte, 1024)
+			n := runtime.Stack(buf, false)
+			fmt.Printf("Stack trace:\n%s\n", buf[:n])
 		}
 
 		common.Response(statusCode, message, errors, w)
