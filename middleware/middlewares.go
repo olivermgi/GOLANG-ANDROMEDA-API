@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/olivermgi/golang-crud-practice/common"
@@ -28,6 +29,8 @@ func (m *Middlewares) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errMessage := ""
 		if !config.IsProduction() {
 			errMessage = fmt.Sprint(err)
+		} else {
+			log.Println(err)
 		}
 
 		statusCode := 500
