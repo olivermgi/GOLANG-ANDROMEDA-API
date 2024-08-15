@@ -3,13 +3,11 @@ package config
 import (
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 var env string
-var port uint16
 
 func init() {
 	err := godotenv.Load()
@@ -18,17 +16,19 @@ func init() {
 	}
 
 	env = os.Getenv("APP_ENV")
-	port64, _ := strconv.ParseUint(os.Getenv("APP_PORT"), 10, 16)
-	port = uint16(port64)
 }
 
 func IsProduction() bool {
 	return env == "production"
 }
 
-func GetPort() uint16 {
-
-	return port
+func GetServerConfig() map[string]string {
+	return map[string]string{
+		"port":             os.Getenv("PORT"),
+		"secure":           os.Getenv("SECURE"),
+		"certificate_path": os.Getenv("SSL_CERTIFICATE_PATH"),
+		"private_key_path": os.Getenv("SSL_PRIVATE_KEY_PATH"),
+	}
 }
 
 func GetMysqlConfig() map[string]string {
