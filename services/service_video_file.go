@@ -83,7 +83,9 @@ func (s *ServiceVideoFile) UploadVideoFile(videoFile *models.VideoFile, file mul
 		return false
 	}
 
-	if vod.Uploader.UploadFile(file, path) != nil {
+	if err := vod.Uploader.UploadFile(file, path); err != nil {
+		log.Println("Storage Upload Failed: ", err)
+		s.model.UpdateStatus(videoFile.VideoId, "upload_failed")
 		return false
 	}
 
@@ -141,7 +143,7 @@ func (s *ServiceVideoFile) GetOrAbort(videoId int) *models.VideoFile {
 func (s *ServiceVideoFile) Delete(videoId int) {
 	videoFile := s.GetOrAbort(videoId)
 
-	if !slices.Contains([]string{"stanby", "uploaded", "transformed", "delete_failed"}, videoFile.Status) {
+	if !slices.Contains([]string{"stanby", "uploaded", "transformed", "upload_failed", "delete_failed"}, videoFile.Status) {
 		common.Abort(http.StatusForbidden, "影片檔案資料正在處理，無法刪除檔案")
 	}
 

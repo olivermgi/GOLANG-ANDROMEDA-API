@@ -66,7 +66,7 @@ func init() {
 
 func (c *clientUploader) UploadFile(file multipart.File, object string) error {
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*120)
 	defer cancel()
 
 	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + object).NewWriter(ctx)
@@ -82,7 +82,7 @@ func (c *clientUploader) UploadFile(file multipart.File, object string) error {
 
 func (c *clientUploader) MoveFile(object string, dstName string) error {
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*120)
 	defer cancel()
 
 	src := c.cl.Bucket(c.bucketName).Object(object)
@@ -140,7 +140,7 @@ func (c *clientTranscoder) TransformVideoFile(inputPath string, outputPaht strin
 	}
 
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*120)
 	defer cancel()
 
 	response, err := c.cl.CreateJob(ctx, req)
@@ -158,7 +158,7 @@ func (c *clientTranscoder) GetJobState(jobID string) (string, error) {
 	}
 
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*120)
 	defer cancel()
 
 	response, err := c.cl.GetJob(ctx, req)
@@ -176,7 +176,7 @@ func (c *clientTranscoder) DeleteJob(jobID string) error {
 	}
 
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*120)
 	defer cancel()
 
 	err := c.cl.DeleteJob(ctx, req)
