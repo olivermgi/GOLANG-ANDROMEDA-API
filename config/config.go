@@ -3,11 +3,13 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 var env string
+var port uint16
 
 func init() {
 	err := godotenv.Load()
@@ -16,10 +18,17 @@ func init() {
 	}
 
 	env = os.Getenv("APP_ENV")
+	port64, _ := strconv.ParseUint(os.Getenv("APP_PORT"), 10, 16)
+	port = uint16(port64)
 }
 
 func IsProduction() bool {
 	return env == "production"
+}
+
+func GetPort() uint16 {
+
+	return port
 }
 
 func GetMysqlConfig() map[string]string {

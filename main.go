@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/olivermgi/golang-crud-practice/config"
 	_ "github.com/olivermgi/golang-crud-practice/controllers/validator"
 	"github.com/olivermgi/golang-crud-practice/middleware"
 	_ "github.com/olivermgi/golang-crud-practice/models"
@@ -11,8 +13,10 @@ import (
 )
 
 func main() {
+	port := config.GetPort()
+
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%v", port),
 		Handler: &middleware.Middlewares{},
 	}
 
