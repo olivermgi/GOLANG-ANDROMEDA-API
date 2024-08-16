@@ -1,4 +1,4 @@
-# Andromeda-API (簡易影音串流專案)
+# Golang-Andromeda-API (簡易影音串流專案)
 
 ## 專案介紹
 
