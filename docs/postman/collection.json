@@ -1,0 +1,405 @@
+{
+	"info": {
+		"_postman_id": "f995d27b-828a-4790-933a-79253e5e3f0b",
+		"name": "Andromeda",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8877650"
+	},
+	"item": [
+		{
+			"name": "前台 API",
+			"item": [
+				{
+					"name": "首頁顯示所有公開影片",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/home",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"home"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "後台 API",
+			"item": [
+				{
+					"name": "影片",
+					"item": [
+						{
+							"name": "檔案",
+							"item": [
+								{
+									"name": "上傳與轉檔",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"description": "file_exists,required,max_file_size=52428800,file_mimes=video/mp4",
+													"type": "file",
+													"src": []
+												}
+											]
+										},
+										"url": {
+											"raw": "{{domain}}/api/internal/videos/:video_id/files",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"api",
+												"internal",
+												"videos",
+												":video_id",
+												"files"
+											],
+											"variable": [
+												{
+													"key": "video_id",
+													"value": "{{videoId}}",
+													"description": "required,min=1"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "單筆",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{domain}}/api/internal/videos/:video_id/files",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"api",
+												"internal",
+												"videos",
+												":video_id",
+												"files"
+											],
+											"variable": [
+												{
+													"key": "video_id",
+													"value": "{{videoId}}",
+													"description": "required,min=1"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "刪除",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{domain}}/api/internal/videos/:video_id/files",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"api",
+												"internal",
+												"videos",
+												":video_id",
+												"files"
+											],
+											"variable": [
+												{
+													"key": "video_id",
+													"value": "{{videoId}}",
+													"description": "required,min=1"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "新增",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"unpublish\", // required,oneof=publish unpublish\n    \"title\": \"死仕與金鋼狼\", // required,max=50\n    \"description\": \"2024 最強英雄電影\" // omitempty,max=255\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}/api/internal/videos",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"api",
+										"internal",
+										"videos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/api/internal/videos?page=1&per_page=20&sort_column=updated_at&sort=desc",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"api",
+										"internal",
+										"videos"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "required,min=1"
+										},
+										{
+											"key": "per_page",
+											"value": "20",
+											"description": "required,oneof=10 20 30"
+										},
+										{
+											"key": "sort_column",
+											"value": "updated_at",
+											"description": "required,oneof=id updated_at"
+										},
+										{
+											"key": "sort",
+											"value": "desc",
+											"description": "required,oneof=asc desc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "單筆 (會紀錄 postman variable)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    if (pm.response.code === 200) {",
+											"        const jsonData = pm.response.json();",
+											"",
+											"        const videoId = jsonData.data.id;",
+											"        pm.environment.set(\"videoId\", videoId);",
+											"",
+											"        console.log(\"Status code is 200, videoId set to:\", videoId);",
+											"    } else {",
+											"        console.log(\"Status code is not 200, no id extracted.\");",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/api/internal/videos/:video_id",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"api",
+										"internal",
+										"videos",
+										":video_id"
+									],
+									"variable": [
+										{
+											"key": "video_id",
+											"value": "1",
+											"description": "required,min=1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "刪除",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/api/internal/videos/:video_id",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"api",
+										"internal",
+										"videos",
+										":video_id"
+									],
+									"variable": [
+										{
+											"key": "video_id",
+											"value": "{{videoId}}",
+											"description": "required,min=1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "更新",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"\", // required,oneof=publish unpublish\n    \"title\": \"\", // required,max=50\n    \"description\": \"\" // omitempty,max=255\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}/api/internal/videos/:video_id",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"api",
+										"internal",
+										"videos",
+										":video_id"
+									],
+									"variable": [
+										{
+											"key": "video_id",
+											"value": "{{videoId}}",
+											"description": "required,min=1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "admin",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "https://vod.olivermg.fun"
+		}
+	]
+}
