@@ -20,7 +20,7 @@ func StoreVideoFile(w http.ResponseWriter, r *http.Request) {
 	serviceVideo := &services.ServiceVideo{}
 	serviceVideo.GetOrAbort(videoId)
 
-	r.ParseMultipartForm(50 << 20)
+	r.ParseMultipartForm(60 << 20)
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		common.Abort(http.StatusForbidden, "未上傳檔案")
