@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/olivermgi/golang-crud-practice/common"
-	rules "github.com/olivermgi/golang-crud-practice/controllers/validator/rules/video"
+	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 

@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/olivermgi/golang-crud-practice/common"
 	"github.com/olivermgi/golang-crud-practice/common/vod"
-	rules "github.com/olivermgi/golang-crud-practice/controllers/validator/rules/video_file"
+	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
 	"github.com/olivermgi/golang-crud-practice/models"
 )
 

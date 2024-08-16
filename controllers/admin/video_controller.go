@@ -7,7 +7,7 @@ import (
 
 	"github.com/olivermgi/golang-crud-practice/common"
 	"github.com/olivermgi/golang-crud-practice/controllers/validator"
-	rules "github.com/olivermgi/golang-crud-practice/controllers/validator/rules/video"
+	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
 	"github.com/olivermgi/golang-crud-practice/services"
 )
 
