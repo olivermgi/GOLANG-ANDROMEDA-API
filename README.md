@@ -97,7 +97,7 @@ Project
     4. .設定 GCP 的 json 憑證路徑與 Storage、Transcode API 相關設定
     5. 設定 Basic Auth 帳密
     6. 若要上正式環境，可把 .env 的 APP_ENV 設定成 production，避免程式錯誤訊息外漏
-3. 將 database/mysql/andromeda.sql 匯入 MySql 8.0 資料庫
+3. 將 database/mysql/schema.sql 匯入 MySql 8.0 資料庫
 4. 執行 go run main.go
 5. 將 docs/postman/collection.json 匯入 Postman
     1. 把 Andromeda 目錄設定 Variables 的 domain 為你本地的 URL ( ex: http://localhost:8080 )
