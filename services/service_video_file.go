@@ -58,6 +58,8 @@ func (s *ServiceVideoFile) TransformVideoFile(videoFile *models.VideoFile) bool 
 				s.model.UpdateStatus(videoFile.VideoId, "transformed")
 				is_success = true
 				break
+			} else if jobState == "FAILED" {
+				break
 			}
 
 			time.Sleep(time.Second)
