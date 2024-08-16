@@ -143,7 +143,7 @@ func (s *ServiceVideoFile) GetOrAbort(videoId int) *models.VideoFile {
 func (s *ServiceVideoFile) Delete(videoId int) {
 	videoFile := s.GetOrAbort(videoId)
 
-	if !slices.Contains([]string{"stanby", "uploaded", "transformed", "upload_failed", "delete_failed"}, videoFile.Status) {
+	if !slices.Contains([]string{"stanby", "uploaded", "transformed", "transform_failed", "upload_failed", "delete_failed"}, videoFile.Status) {
 		common.Abort(http.StatusForbidden, "影片檔案資料正在處理，無法刪除檔案")
 	}
 
