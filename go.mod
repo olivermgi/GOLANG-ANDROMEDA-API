@@ -1,4 +1,4 @@
-module github.com/olivermgi/golang-crud-practice
+module github.com/olivermgi/golang-andromeda-api
 
 go 1.22.5
 

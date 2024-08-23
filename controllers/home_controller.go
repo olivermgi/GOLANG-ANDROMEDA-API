@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/olivermgi/golang-crud-practice/common"
-	"github.com/olivermgi/golang-crud-practice/services"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	"github.com/olivermgi/golang-andromeda-api/services"
 )
 
 // 首頁

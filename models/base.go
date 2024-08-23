@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/olivermgi/golang-crud-practice/config"
+	"github.com/olivermgi/golang-andromeda-api/config"
 )
 
 var DB *sql.DB

@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/olivermgi/golang-crud-practice/common"
-	"github.com/olivermgi/golang-crud-practice/common/vod"
-	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
-	"github.com/olivermgi/golang-crud-practice/models"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	"github.com/olivermgi/golang-andromeda-api/common/vod"
+	"github.com/olivermgi/golang-andromeda-api/controllers/validator/rules"
+	"github.com/olivermgi/golang-andromeda-api/models"
 )
 
 type ServiceVideoFile struct {

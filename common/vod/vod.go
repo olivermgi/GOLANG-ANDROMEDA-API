@@ -12,7 +12,7 @@ import (
 	"cloud.google.com/go/storage"
 	transcoder "cloud.google.com/go/video/transcoder/apiv1"
 	"cloud.google.com/go/video/transcoder/apiv1/transcoderpb"
-	"github.com/olivermgi/golang-crud-practice/config"
+	"github.com/olivermgi/golang-andromeda-api/config"
 )
 
 type clientUploader struct {

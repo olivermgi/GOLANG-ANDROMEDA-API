@@ -14,7 +14,7 @@ import (
 	ut "github.com/go-playground/universal-translator"          // 翻譯器
 	"github.com/go-playground/validator/v10"                    // 驗證器
 	"github.com/go-playground/validator/v10/translations/zh_tw" // 語言包
-	"github.com/olivermgi/golang-crud-practice/common"
+	"github.com/olivermgi/golang-andromeda-api/common"
 )
 
 var validate *validator.Validate

@@ -3,9 +3,9 @@ package routes
 import (
 	"net/http"
 
-	"github.com/olivermgi/golang-crud-practice/common"
-	controllers "github.com/olivermgi/golang-crud-practice/controllers"
-	admin_controllers "github.com/olivermgi/golang-crud-practice/controllers/admin"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	controllers "github.com/olivermgi/golang-andromeda-api/controllers"
+	admin_controllers "github.com/olivermgi/golang-andromeda-api/controllers/admin"
 )
 
 // 註冊 API 路由

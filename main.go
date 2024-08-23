@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/olivermgi/golang-crud-practice/config"
-	_ "github.com/olivermgi/golang-crud-practice/controllers/validator"
-	"github.com/olivermgi/golang-crud-practice/middleware"
-	_ "github.com/olivermgi/golang-crud-practice/models"
-	"github.com/olivermgi/golang-crud-practice/routes"
+	"github.com/olivermgi/golang-andromeda-api/config"
+	_ "github.com/olivermgi/golang-andromeda-api/controllers/validator"
+	"github.com/olivermgi/golang-andromeda-api/middleware"
+	_ "github.com/olivermgi/golang-andromeda-api/models"
+	"github.com/olivermgi/golang-andromeda-api/routes"
 )
 
 func main() {

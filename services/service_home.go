@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/olivermgi/golang-crud-practice/models"
+	"github.com/olivermgi/golang-andromeda-api/models"
 )
 
 type ServiceHome struct {

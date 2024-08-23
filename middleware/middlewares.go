@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/olivermgi/golang-crud-practice/common"
-	"github.com/olivermgi/golang-crud-practice/config"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	"github.com/olivermgi/golang-andromeda-api/config"
 )
 
 type Middlewares struct {

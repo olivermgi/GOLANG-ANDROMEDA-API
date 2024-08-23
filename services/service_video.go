@@ -3,9 +3,9 @@ package services
 import (
 	"net/http"
 
-	"github.com/olivermgi/golang-crud-practice/common"
-	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
-	"github.com/olivermgi/golang-crud-practice/models"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	"github.com/olivermgi/golang-andromeda-api/controllers/validator/rules"
+	"github.com/olivermgi/golang-andromeda-api/models"
 )
 
 type ServiceVideo struct {

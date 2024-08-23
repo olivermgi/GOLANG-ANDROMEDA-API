@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/olivermgi/golang-crud-practice/common"
-	"github.com/olivermgi/golang-crud-practice/controllers/validator"
-	"github.com/olivermgi/golang-crud-practice/controllers/validator/rules"
-	"github.com/olivermgi/golang-crud-practice/services"
+	"github.com/olivermgi/golang-andromeda-api/common"
+	"github.com/olivermgi/golang-andromeda-api/controllers/validator"
+	"github.com/olivermgi/golang-andromeda-api/controllers/validator/rules"
+	"github.com/olivermgi/golang-andromeda-api/services"
 )
 
 // 顯示影片列表 (分頁+排序)
