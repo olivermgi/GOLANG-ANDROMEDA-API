@@ -8,21 +8,29 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"github.com/olivermgi/golang-andromeda-api/config"
 )
 
 var DB *sql.DB
 
 func init() {
-	dbConfig := config.GetMysqlConfig()
+	dbConfig := config.GetDatabaseConfig()
+	driver := config.GetDatabaseDriver()
 
-	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbConfig["username"], dbConfig["password"], dbConfig["host"], dbConfig["port"], dbConfig["database"])
-	//連接MySQL
+	conn := ""
+	if driver == "mysql" {
+		conn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbConfig["username"], dbConfig["password"], dbConfig["host"], dbConfig["port"], dbConfig["database"])
+	} else if driver == "postgres" {
+		conn = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=disable", dbConfig["username"], dbConfig["password"], dbConfig["host"], dbConfig["port"], dbConfig["database"])
+	}
+
 	var err error
-	DB, err = sql.Open("mysql", conn)
+	DB, err = sql.Open(driver, conn)
 	if err != nil {
 		log.Fatalln("資料庫設定錯誤，錯誤資訊：", err)
 	}
+
 	DB.SetConnMaxLifetime(time.Minute * 3)
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(10)

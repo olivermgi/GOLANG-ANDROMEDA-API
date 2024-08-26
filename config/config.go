@@ -8,6 +8,7 @@ import (
 )
 
 var env string
+var dbDriver string
 
 func init() {
 	err := godotenv.Load()
@@ -16,6 +17,7 @@ func init() {
 	}
 
 	env = os.Getenv("APP_ENV")
+	dbDriver = os.Getenv("DB_DRIVER")
 }
 
 func IsProduction() bool {
@@ -31,7 +33,11 @@ func GetServerConfig() map[string]string {
 	}
 }
 
-func GetMysqlConfig() map[string]string {
+func GetDatabaseDriver() string {
+	return dbDriver
+}
+
+func GetDatabaseConfig() map[string]string {
 	return map[string]string{
 		"host":     os.Getenv("DB_HOST"),
 		"port":     os.Getenv("DB_PORT"),
